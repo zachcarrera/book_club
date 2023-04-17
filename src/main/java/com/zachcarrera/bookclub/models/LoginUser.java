@@ -5,11 +5,11 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
 public class LoginUser {
-    @NotEmpty
+    @NotEmpty(message="Email is required")
     @Email
     private String email;
 
-    @NotEmpty
+    @NotEmpty(message="Password is required")
     @Size(max = 128)
     private String password;
 
