@@ -57,11 +57,17 @@ public class BookController {
 	@PostMapping("/new")
 	public String processNewBook(
 			@Valid @ModelAttribute("newBook") Book newBook,
-			BindingResult result
+			BindingResult result,
+			HttpSession session
 			) {
+		if (session.getAttribute("userId") == null) {
+			return "redirect:/";
+		}
+
 		if (result.hasErrors()) {
 			return "newBook.jsp";
 		}
+
 		bookService.createBook(newBook);
 		return "redirect:/books";
 	}
@@ -73,21 +79,41 @@ public class BookController {
 			Model model,
 			HttpSession session
 			) {
-		if (session.getAttribute("userId") == null) {
+		Long userId = (Long) session.getAttribute("userId");
+		if (userId == null) {
 			return "redirect:/";
 		}
-		model.addAttribute("oneBook", bookService.findBook(id));
+		
+		Book oneBook = bookService.findBook(id);
+		
+		if (!userId.equals(oneBook.getUser().getId())) {
+			return "redirect:/books/" + oneBook.getId();
+		}
+
+		model.addAttribute("oneBook", oneBook);
 		return "editBook.jsp";
 	}
 	
 	@PutMapping("/{id}/edit")
 	public String processEditBook(
 			@Valid @ModelAttribute("oneBook") Book oneBook,
-			BindingResult result
+			BindingResult result,
+			HttpSession session
 			) {
+		
+		Long userId = (Long) session.getAttribute("userId");
+		
+		if (userId == null ) {
+			return "redirect:/";
+		}
+		if (!userId.equals(oneBook.getUser().getId())) {
+			return "redirect:/books/" + oneBook.getId();
+		}
+		
 		if (result.hasErrors()) {
 			return "editBook.jsp";
 		}
+
 		Book updatedBook = bookService.updateBook(oneBook);
 		return "redirect:/books/" + updatedBook.getId();
 	}
@@ -95,7 +121,18 @@ public class BookController {
 	
 	// ----- DELETE BOOK -----
 	@DeleteMapping("/{id}")
-	public String deleteBook(@PathVariable("id") Long id) {
+	public String deleteBook(@PathVariable("id") Long id, HttpSession session) {
+		Long userId = (Long) session.getAttribute("userId");
+		if (userId == null) {
+			return "redirect:/";
+		}
+		
+		Book oneBook = bookService.findBook(id);
+		
+		if (!userId.equals(oneBook.getUser().getId())) {
+			return "redirect:/books/" + oneBook.getId();
+		}
+
 		bookService.removeBook(id);
 		return "redirect:/books";
 	}
