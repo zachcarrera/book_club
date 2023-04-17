@@ -29,19 +29,19 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotEmpty
+	@NotEmpty(message="Name is required")
 	private String name;
 
-	@NotEmpty
-	@Email
+	@NotEmpty(message="Email is required")
+	@Email(message="Must be a valid email format")
 	private String email;
 
-	@NotEmpty
+	@NotEmpty(message="Password is required")
 	@Size(max = 128)
 	private String password;
 
 	@Transient
-	@NotEmpty
+	@NotEmpty(message="Confirm Password is required")
 	@Size(max = 128)
 	private String confirm;
 
