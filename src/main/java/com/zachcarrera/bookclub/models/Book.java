@@ -25,13 +25,13 @@ public class Book {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotBlank
+	@NotBlank(message="Title is required")
 	private String title;
 
-	@NotBlank
+	@NotBlank(message="Author is required")
 	private String author;
 
-	@NotBlank
+	@NotBlank(message="My thoughts cannot be blank")
 	private String thoughts;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -47,6 +47,13 @@ public class Book {
 
 	// constructors
 	public Book() {
+	}
+
+	public Book(String title, String author, String thoughts, User user) {
+		this.title = title;
+		this.author = author;
+		this.thoughts = thoughts;
+		this.user = user;
 	}
 
 	// createdAt updatedAt automation
